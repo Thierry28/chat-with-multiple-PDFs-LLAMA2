@@ -42,6 +42,8 @@ def get_pdf_text(pdf_docs):
 # Function to split text into chunks
 @timeit
 def get_text_chunks(text):
+    print("Splitting text into chunks...")
+    print(f"Length of text: {len(text)}")
     text_splitter = CharacterTextSplitter(
         separator="\n", chunk_size=1000, chunk_overlap=200, length_function=len
     )
@@ -52,6 +54,8 @@ def get_text_chunks(text):
 # Function to create a vector store
 @timeit
 def get_vectorstore(text_chunks):
+    print("Creating vector store...")
+    print(f"Number of text chunks: {len(text_chunks)}")
     embeddings = OllamaEmbeddings(
         # num_gpu=2
     )
@@ -63,6 +67,7 @@ def get_vectorstore(text_chunks):
 # Function to create a conversation chain
 @timeit
 def get_conversation_chain(vectorstore):
+    print("Creating conversation chain...")
     llm = ChatOllama(
         model="llama2:70b-chat",
         callback_manager=CallbackManager([StreamingStdOutCallbackHandler()]),
@@ -97,7 +102,9 @@ def handle_userinput(user_question):
 
 # Main function
 def main():
+    print("Starting Streamlit app...")
     load_dotenv()
+    print("Loaded environment variables")
     st.set_page_config(page_title="Chat with multiple PDFs", page_icon=":books:")
     st.write(css, unsafe_allow_html=True)
 
@@ -121,15 +128,19 @@ def main():
         if st.button("Process"):
             with st.spinner("Processing"):
                 # Get text from PDFs
+                print("Processing PDFs...")
                 raw_text = get_pdf_text(pdf_docs)
 
                 # Split text into chunks
+                print("Processing text...")
                 text_chunks = get_text_chunks(raw_text)
 
                 # Create vector store
+                print("Processing vector store...")
                 vectorstore = get_vectorstore(text_chunks)
 
                 # create conversation chain
+                print("Processing conversation chain...")
                 st.session_state.conversation = get_conversation_chain(vectorstore)
 
 
